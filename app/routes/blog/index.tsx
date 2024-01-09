@@ -5,52 +5,52 @@ import {
   types,
   cleanPage,
   PageViewer,
-} from 'react-bricks/frontend'
-import { useReactBricksContext } from 'react-bricks/frontend'
-import { useLoaderData } from '@remix-run/react'
+} from "react-bricks/frontend";
+import { useReactBricksContext } from "react-bricks/frontend";
+import { useLoaderData } from "@remix-run/react";
 
-import PostListItem from '~/components/PostListItem'
-import TagListItem from '~/components/TagListItem'
+import PostListItem from "~/app/components/PostListItem";
+import TagListItem from "~/app/components/TagListItem";
 
 export const loader = async () => {
   const posts = await fetchPages(process.env.API_KEY as string, {
-    type: 'blog',
+    type: "blog",
     pageSize: 1000,
-    sort: '-publishedAt',
-  })
+    sort: "-publishedAt",
+  });
 
-  const { items: tags } = await fetchTags(process.env.API_KEY as string)
-  tags.sort()
+  const { items: tags } = await fetchTags(process.env.API_KEY as string);
+  tags.sort();
 
-  const header = await fetchPage('header', process.env.API_KEY as string).catch(
+  const header = await fetchPage("header", process.env.API_KEY as string).catch(
     () => {
       throw new Error(
         `Cannot find header. Create a new 'header' entity under 'Layout'`
-      )
+      );
     }
-  )
-  const footer = await fetchPage('footer', process.env.API_KEY as string).catch(
+  );
+  const footer = await fetchPage("footer", process.env.API_KEY as string).catch(
     () => {
       throw new Error(
         `Cannot find footer. Create a new 'footer' entity under 'Layout'`
-      )
+      );
     }
-  )
+  );
 
-  return { posts, tags, header, footer }
-}
+  return { posts, tags, header, footer };
+};
 
 export default function List() {
   const { posts, tags, header, footer } = useLoaderData<{
-    posts: types.PageFromList[]
-    tags: string[]
-    header: types.Page
-    footer: types.Page
-  }>()
+    posts: types.PageFromList[];
+    tags: string[];
+    header: types.Page;
+    footer: types.Page;
+  }>();
 
-  const { pageTypes, bricks } = useReactBricksContext()
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = header ? cleanPage(footer, pageTypes, bricks) : null
+  const { pageTypes, bricks } = useReactBricksContext();
+  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null;
+  const footerOk = header ? cleanPage(footer, pageTypes, bricks) : null;
 
   return (
     <>
@@ -74,19 +74,19 @@ export default function List() {
               return (
                 <PostListItem
                   key={post.id}
-                  title={post.meta.title || ''}
+                  title={post.meta.title || ""}
                   href={post.slug}
-                  content={post.meta.description || ''}
+                  content={post.meta.description || ""}
                   author={post.author}
-                  date={post.publishedAt || ''}
+                  date={post.publishedAt || ""}
                   featuredImg={post.meta.image}
                 />
-              )
+              );
             })}
           </div>
         </div>
       </div>
       <PageViewer page={footerOk} showClickToEdit={false} />
     </>
-  )
+  );
 }

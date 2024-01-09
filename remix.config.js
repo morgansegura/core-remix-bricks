@@ -9,4 +9,11 @@ module.exports = {
   serverBuildDirectory: "build",
   devServerPort: 8002,
   ignoredRouteFiles: [".*"],
+  optimize: {
+    bundle: {
+      external: {
+        include: ['@fontsource-variable/open-sans/wght.css'],
+      },
+    },
+  },
 }

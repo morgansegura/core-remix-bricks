@@ -5,45 +5,45 @@ import {
   types,
   cleanPage,
   PageViewer,
-} from 'react-bricks/frontend'
-import { useReactBricksContext } from 'react-bricks/frontend'
-import { useLoaderData, Link } from '@remix-run/react'
-import PostListItem from '~/components/PostListItem'
-import TagListItem from '~/components/TagListItem'
-import type { LoaderArgs } from '@remix-run/node'
+} from "react-bricks/frontend";
+import { useReactBricksContext } from "react-bricks/frontend";
+import { useLoaderData, Link } from "@remix-run/react";
+import PostListItem from "~/app/components/PostListItem";
+import TagListItem from "~/app/components/TagListItem";
+import type { LoaderArgs } from "@remix-run/node";
 
 export const loader = async ({ params }: LoaderArgs) => {
-  const { tag } = params
+  const { tag } = params;
 
   const pagesByTag = await fetchPages(process.env.API_KEY as string, {
     tag: tag?.toString(),
-    type: 'blog',
+    type: "blog",
     pageSize: 1000,
-    sort: '-publishedAt',
-  })
+    sort: "-publishedAt",
+  });
   const popularPosts = await fetchPages(process.env.API_KEY as string, {
-    type: 'blog',
-    tag: 'popular',
-    sort: '-publishedAt',
-  })
+    type: "blog",
+    tag: "popular",
+    sort: "-publishedAt",
+  });
 
-  const { items: tags } = await fetchTags(process.env.API_KEY as string)
-  tags.sort()
+  const { items: tags } = await fetchTags(process.env.API_KEY as string);
+  tags.sort();
 
-  const header = await fetchPage('header', process.env.API_KEY as string).catch(
+  const header = await fetchPage("header", process.env.API_KEY as string).catch(
     () => {
       throw new Error(
         `Cannot find header. Create a new 'header' entity under 'Layout'`
-      )
+      );
     }
-  )
-  const footer = await fetchPage('footer', process.env.API_KEY as string).catch(
+  );
+  const footer = await fetchPage("footer", process.env.API_KEY as string).catch(
     () => {
       throw new Error(
         `Cannot find footer. Create a new 'footer' entity under 'Layout'`
-      )
+      );
     }
-  )
+  );
 
   return {
     pagesByTag,
@@ -52,26 +52,26 @@ export const loader = async ({ params }: LoaderArgs) => {
     allTags: tags,
     header,
     footer,
-  }
-}
+  };
+};
 
 interface LoaderProps {
-  pagesByTag: types.Page[]
-  popularPosts: types.Page[]
-  error: string
-  filterTag: string
-  allTags: string[]
-  header: types.Page
-  footer: types.Page
+  pagesByTag: types.Page[];
+  popularPosts: types.Page[];
+  error: string;
+  filterTag: string;
+  allTags: string[];
+  header: types.Page;
+  footer: types.Page;
 }
 
 export default function List() {
   const { filterTag, pagesByTag, allTags, header, footer } =
-    useLoaderData<LoaderProps>()
+    useLoaderData<LoaderProps>();
 
-  const { pageTypes, bricks } = useReactBricksContext()
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = header ? cleanPage(footer, pageTypes, bricks) : null
+  const { pageTypes, bricks } = useReactBricksContext();
+  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null;
+  const footerOk = header ? cleanPage(footer, pageTypes, bricks) : null;
 
   return (
     <>
@@ -103,11 +103,11 @@ export default function List() {
             {pagesByTag?.map((post) => (
               <PostListItem
                 key={post.id}
-                title={post.meta.title || ''}
+                title={post.meta.title || ""}
                 href={post.slug}
-                content={post.meta.description || ''}
+                content={post.meta.description || ""}
                 author={post.author}
-                date={post.publishedAt || ''}
+                date={post.publishedAt || ""}
                 featuredImg={post.meta.image}
               />
             ))}
@@ -116,5 +116,5 @@ export default function List() {
       </div>
       <PageViewer page={footerOk} showClickToEdit={false} />
     </>
-  )
+  );
 }

@@ -4,61 +4,61 @@ import {
   cleanPage,
   getSchemaOrgData,
   types,
-} from 'react-bricks/frontend'
-import { useReactBricksContext } from 'react-bricks/frontend'
-import { useLoaderData } from '@remix-run/react'
-import Layout from '~/components/Layout'
-import ErrorMessage from '~/components/ErrorMessage'
-import { redirect } from '@remix-run/node'
-import type { LoaderArgs } from '@remix-run/node'
-import { Helmet } from 'react-helmet'
+} from "react-bricks/frontend";
+import { useReactBricksContext } from "react-bricks/frontend";
+import { useLoaderData } from "@remix-run/react";
+import Layout from "~/app/components/Layout";
+import ErrorMessage from "~/app/components/ErrorMessage";
+import { redirect } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import { Helmet } from "react-helmet";
 
 export const loader = async ({ params }: LoaderArgs) => {
-  const splat = params['*']
+  const splat = params["*"];
 
   const [page, header, footer] = await Promise.all([
     fetchPage(splat!, process.env.API_KEY as string).catch(() => {
-      throw new Error(`Cannot find the "${splat}" page.`)
+      throw new Error(`Cannot find the "${splat}" page.`);
     }),
-    fetchPage('header', process.env.API_KEY as string).catch(() => {
+    fetchPage("header", process.env.API_KEY as string).catch(() => {
       throw new Error(
         `Cannot find header. Create a new 'header' entity under 'Layout'`
-      )
+      );
     }),
-    fetchPage('footer', process.env.API_KEY as string).catch(() => {
+    fetchPage("footer", process.env.API_KEY as string).catch(() => {
       throw new Error(
         `Cannot find footer. Create a new 'footer' entity under 'Layout'`
-      )
+      );
     }),
-  ])
+  ]);
 
-  if (page.slug === 'header' || page.slug === 'footer') return redirect('/')
+  if (page.slug === "header" || page.slug === "footer") return redirect("/");
 
   return {
     page,
     header,
     footer,
-  }
-}
+  };
+};
 
 export default function Page() {
   const { page, header, footer } = useLoaderData<{
-    page: types.Page
-    header: types.Page
-    footer: types.Page
-  }>()
+    page: types.Page;
+    header: types.Page;
+    footer: types.Page;
+  }>();
   // Clean the received content
   // Removes unknown or not allowed bricks
-  const { pageTypes, bricks } = useReactBricksContext()
+  const { pageTypes, bricks } = useReactBricksContext();
   const pageOk =
-    page && page.slug !== 'header' && page.slug !== 'footer'
+    page && page.slug !== "header" && page.slug !== "footer"
       ? cleanPage(page, pageTypes, bricks)
-      : null
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null
+      : null;
+  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null;
+  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null;
 
-  const { meta } = page
-  const schemaOrgData = getSchemaOrgData(page)
+  const { meta } = page;
+  const schemaOrgData = getSchemaOrgData(page);
 
   return (
     <Layout>
@@ -120,7 +120,7 @@ export default function Page() {
       <PageViewer page={pageOk} />
       <PageViewer page={footerOk} showClickToEdit={false} />
     </Layout>
-  )
+  );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -128,5 +128,5 @@ export function ErrorBoundary({ error }: { error: Error }) {
     <Layout>
       <ErrorMessage error={error} />
     </Layout>
-  )
+  );
 }

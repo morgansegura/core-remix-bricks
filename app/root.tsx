@@ -13,13 +13,16 @@ import {
 import type { MetaFunction } from '@remix-run/node'
 import { ReactBricks } from 'react-bricks/frontend'
 import config from './react-bricks/config'
-
-import stylesheet from './tailwind.css'
 import ErrorMessage from './components/ErrorMessage'
+import type { LinksFunction } from "@remix-run/node";
 
-export function links() {
-  return [{ rel: 'stylesheet', href: stylesheet }]
-}
+import FontSource from "@fontsource-variable/open-sans/wght.css";
+import styles from '~/app/styles/globals.css'
+
+export const links: LinksFunction = () => [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: FontSource },
+];
 
 export const meta: MetaFunction = () => {
   return { title: 'Remix Blog Starter with React Bricks' }

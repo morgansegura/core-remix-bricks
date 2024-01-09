@@ -3,50 +3,50 @@ import {
   fetchPage,
   cleanPage,
   getSchemaOrgData,
-} from 'react-bricks/frontend'
-import { useReactBricksContext } from 'react-bricks/frontend'
-import { useLoaderData } from '@remix-run/react'
-import Layout from '~/components/Layout'
-import type { LoaderArgs } from '@remix-run/node'
-import { Helmet } from 'react-helmet'
+} from "react-bricks/frontend";
+import { useReactBricksContext } from "react-bricks/frontend";
+import { useLoaderData } from "@remix-run/react";
+import Layout from "~/app/components/Layout";
+import type { LoaderArgs } from "@remix-run/node";
+import { Helmet } from "react-helmet";
 
 export const loader = async ({ params }: LoaderArgs) => {
-  const splat = params['*']
+  const splat = params["*"];
 
   const [page, header, footer] = await Promise.all([
     fetchPage(splat!, process.env.API_KEY as string).catch(() => {
-      throw new Error(`Cannot find the "${splat}" post.`)
+      throw new Error(`Cannot find the "${splat}" post.`);
     }),
-    fetchPage('header', process.env.API_KEY as string).catch(() => {
+    fetchPage("header", process.env.API_KEY as string).catch(() => {
       throw new Error(
         `Cannot find header. Create a new 'header' entity under 'Layout'`
-      )
+      );
     }),
-    fetchPage('footer', process.env.API_KEY as string).catch(() => {
+    fetchPage("footer", process.env.API_KEY as string).catch(() => {
       throw new Error(
         `Cannot find footer. Create a new 'footer' entity under 'Layout'`
-      )
+      );
     }),
-  ])
+  ]);
 
   return {
     page,
     header,
     footer,
-  }
-}
+  };
+};
 
 export default function Page() {
-  const { page, header, footer } = useLoaderData<typeof loader>()
+  const { page, header, footer } = useLoaderData<typeof loader>();
   // Clean the received content
   // Removes unknown or not allowed bricks
-  const { pageTypes, bricks } = useReactBricksContext()
-  const pageOk = page ? cleanPage(page, pageTypes, bricks) : null
-  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null
-  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null
+  const { pageTypes, bricks } = useReactBricksContext();
+  const pageOk = page ? cleanPage(page, pageTypes, bricks) : null;
+  const headerOk = header ? cleanPage(header, pageTypes, bricks) : null;
+  const footerOk = footer ? cleanPage(footer, pageTypes, bricks) : null;
 
-  const { meta } = page
-  const schemaOrgData = getSchemaOrgData(page)
+  const { meta } = page;
+  const schemaOrgData = getSchemaOrgData(page);
 
   return (
     <Layout>
@@ -108,5 +108,5 @@ export default function Page() {
       <PageViewer page={pageOk} />
       <PageViewer page={footerOk} showClickToEdit={false} />
     </Layout>
-  )
+  );
 }
